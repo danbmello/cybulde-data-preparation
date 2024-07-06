@@ -8,7 +8,7 @@ HOST_NAME = $(COMPUTERNAME)
 DOCKER_COMPOSE_COMMAND = docker-compose
 
 SERVICE_NAME = app
-CONTAINER_NAME = dbmello-template-container
+CONTAINER_NAME = cybulde-data-preparation-container
 
 DIRS_TO_VALIDATE = cybulde
 DOCKER_COMPOSE_RUN = $(DOCKER_COMPOSE_COMMAND) run --rm $(SERVICE_NAME)
@@ -20,8 +20,8 @@ guard-%:
 	@#$(or ${$*}, $(error $* is not set))
 
 ## Call entrypoint
-entrypoint: up
-	$(DOCKER_COMPOSE_EXEC) python ./cybulde/entrypoint.py
+prepare-dataset: up
+	$(DOCKER_COMPOSE_EXEC) python ./cybulde/prepare_dataset.py
 
 ## Starts jupyter lab
 notebook: up
@@ -66,6 +66,10 @@ full-check: lint check-type-annotations
 build:
 	$(DOCKER_COMPOSE_COMMAND) build $(SERVICE_NAME)
 
+## Builds docker image no cache
+build-no-cache:
+	$(DOCKER_COMPOSE_COMMAND) build $(SERVICE_NAME) --no-cache
+
 ## Remove poetry.lock and build docker image
 build-for-dependencies:
 	powershell -Command "Remove-Item -Force *.lock"
@@ -87,10 +91,23 @@ down:
 exec-in: up
 	docker exec -it $(CONTAINER_NAME) bash
 
-
 .DEFAULT_GOAL := help
 
-## Print available MAKE commands
+# Inspired by <http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html>
+# sed script explained:
+# /^##/:
+# 	* save line in hold space
+# 	* purge line
+# 	* Loop:
+# 		* append newline + line to hold space
+# 		* go to next line
+# 		* if line starts with doc comment, strip comment character off and loop
+# 	* remove target prerequisites
+# 	* append hold space (+ newline) to line
+# 	* replace newline plus comments by `---`
+# 	* print line
+# Separate expressions are necessary because labels cannot be delimited by
+# semicolon; see <http://stackoverflow.com/a/11799865/1968>
 .PHONY: help
 help:
 	@powershell -Command "Write-Output 'Available rules:'; \
@@ -104,7 +121,3 @@ help:
 			Write-Host $$description \
 		} \
 	}"
-
-
-
-
