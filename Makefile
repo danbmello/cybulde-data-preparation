@@ -23,6 +23,9 @@ guard-%:
 prepare-dataset: up
 	$(DOCKER_COMPOSE_EXEC) python ./cybulde/prepare_dataset.py
 
+process-data: up
+	$(DOCKER_COMPOSE_EXEC) python ./cybulde/process_data.py
+
 ## Starts jupyter lab
 notebook: up
 	$(DOCKER_COMPOSE_EXEC) jupyter-lab --ip 0.0.0.0 --port 8888 --no-browser

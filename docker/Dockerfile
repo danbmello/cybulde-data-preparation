@@ -51,7 +51,8 @@ RUN git config --global user.email "danbmello@gmail.com" \
     && git config --global user.name "danbm" \
     && git config --global --add safe.directory /app
 
-RUN python3.10 -m nltk.downloader stopwords \
+RUN pip install --upgrade dvc-gs \
+    && python3.10 -m nltk.downloader stopwords \
     && python3.10 -m nltk.downloader punkt
 
 COPY . /app/
