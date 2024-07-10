@@ -14,4 +14,3 @@ def access_secret_version(project_id: str, secret_id: str, version_id: str = "1"
     # Payload of the response
     payload = response.payload.data.decode("UTF-8")
     return payload
-

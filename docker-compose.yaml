@@ -15,7 +15,8 @@ services:
       - ./:/app/
       - ~/.config/gcloud/:/home/${USER_NAME}/.config/gcloud
     ports:
-      - "8080:8080"
+      # To use Jupyter Lab must be port 8888
+      - "8888:8888"
 
     ipc: host
     init: true

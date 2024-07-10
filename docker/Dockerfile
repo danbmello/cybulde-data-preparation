@@ -45,6 +45,9 @@ RUN poetry config virtualenvs.create false \
 USER root
 COPY ./docker/scripts/* /
 RUN chown -R ${USER_NAME} /*.sh && chmod +x /*.sh
+
+# This command is require for Jupyter Lab
+RUN chown -R ${USER_NAME} ${HOME}/.local
 USER ${USER_NAME}
 
 RUN git config --global user.email "danbmello@gmail.com" \
