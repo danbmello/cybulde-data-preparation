@@ -4,11 +4,12 @@ from abc import ABC, abstractmethod
 from typing import Optional
 
 import dask.dataframe as dd
-
 from dask_ml.model_selection import train_test_split
 
+from dvc.api import get_url
+
 from cybulde.utils.utils import get_logger
-from cybulde.utils.data_utils import repartition_dataframe
+from cybulde.utils.data_utils import get_repo_address_with_access_token, repartition_dataframe
 
 
 # Abstract base class in order to have some schma defined for our datase readers
@@ -17,10 +18,23 @@ class DatasetReader(ABC):
     required_columns = {"text", "label", "split", "dataset_name"}
     split_names = {"train", "dev", "test"}
 
-    def __init__(self, dataset_dir: str, dataset_name: str) -> None:
+    def __init__(
+            self,
+            dataset_dir: str,
+            dataset_name: str,
+            gcp_project_id: str,
+            gcp_github_access_token_secret_id: str,
+            dvc_remote_repo: str,
+            github_user_name: str,
+            version: str,
+            ) -> None:
         self.logger = get_logger(self.__class__.__name__)
         self.dataset_dir = dataset_dir
         self.dataset_name = dataset_name
+        self.dvc_remote_repo = get_repo_address_with_access_token(
+            gcp_project_id, gcp_github_access_token_secret_id, dvc_remote_repo, github_user_name
+        )
+        self.version = version
 
     def read_data(self) -> dd.core.DataFrame:
         self.logger.info(f"Reading {self.__class__.__name__}...")
@@ -71,13 +85,35 @@ class DatasetReader(ABC):
         first_df = dd.concat(first_dfs)
         second_df = dd.concat(second_dfs)
         return first_df, second_df
+    
+    # Get the dataset url    
+    def get_remote_data_url(self, dataset_path: str) -> str:
+        dataset_url: str = get_url(path=dataset_path, repo=self.dvc_remote_repo, rev=self.version)
+        return dataset_url
 
 
 class GHCDatasetReader(DatasetReader):
     # As GHC doesn't have dev_df, we will split train_df. For that we need another parameter dev_split_ratio
-    def __init__(self, dataset_dir: str, dataset_name: str, dev_split_ratio: float) -> None:
-        # Call __init__ method of the parent class
-        super().__init__(dataset_dir, dataset_name)
+    def __init__(
+        self,
+        dataset_dir: str,
+        dataset_name: str,
+        dev_split_ratio: float,
+        gcp_project_id: str,
+        gcp_github_access_token_secret_id: str,
+        dvc_remote_repo: str,
+        github_user_name: str,
+        version: str,
+    ) -> None:
+        super().__init__(
+            dataset_dir,
+            dataset_name,
+            gcp_project_id,
+            gcp_github_access_token_secret_id,
+            dvc_remote_repo,
+            github_user_name,
+            version,
+        )
         self.dev_split_ratio = dev_split_ratio
 
     def _read_data(self) -> tuple[dd.core.DataFrame, dd.core.DataFrame, dd.core.DataFrame]:

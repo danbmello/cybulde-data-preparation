@@ -1,6 +1,7 @@
 import psutil
 from shutil import rmtree
 
+from cybulde.utils.gcp_utils import access_secret_version
 from utils.utils import run_shell_command
 
 from typing import Optional
@@ -118,5 +119,14 @@ def repartition_dataframe(
     partitioned_df: dd.core.DataFrame = df.repartition(npartitions=1).repartition(npartitions=nrof_partitions)  # type: ignore
     return partitioned_df
 
+
+# We need to specify the location of our repository as a parameter for DVC python API get_url() method.
+# This function returns repository URL, including username and GitHub access token.
+def get_repo_address_with_access_token(
+    gcp_project_id: str, gcp_secret_id: str, repo_address: str, user_name: str
+) -> str:
+    access_token = access_secret_version(gcp_project_id, gcp_secret_id)
+    repo_address = repo_address.replace("https://", "")
+    return f"https://{user_name}:{access_token}@{repo_address}"
 
 

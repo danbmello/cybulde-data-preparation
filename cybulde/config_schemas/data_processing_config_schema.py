@@ -25,6 +25,9 @@ class DataProcessingConfig:
 
     processed_data_save_dir: str = MISSING
 
+    docker_image_name: str = MISSING
+    docker_image_tag: str = MISSING
+
 
 def setup_config() -> None:
     gcp_schema.setup_config()
