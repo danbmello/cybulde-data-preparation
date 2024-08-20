@@ -16,4 +16,5 @@ hydra:
     dir: .
 
 version: v3
-processed_data_save_dir: ./data/processed
+# processed_data_save_dir: ./data/processed
+processed_data_save_dir: gs://cybulde-dbm/data/processed/${run_tag}

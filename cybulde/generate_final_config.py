@@ -6,10 +6,10 @@
 
 
 import argparse
+
 from pathlib import Path
 
-from cybulde.utils.config_utils import compose_config, config_args_parser, save_config_as_yaml, save_config_as_pickle
-
+from cybulde.utils.config_utils import compose_config, config_args_parser, save_config_as_pickle, save_config_as_yaml
 
 
 def generate_final_config(args: argparse.Namespace) -> None:
@@ -28,8 +28,6 @@ def generate_final_config(args: argparse.Namespace) -> None:
     # Save file as .yaml and .pickle
     save_config_as_yaml(config, str(config_save_dir / f"{config_name}.yaml"))
     save_config_as_pickle(config, str(config_save_dir / f"{config_name}.pickle"))
-
-
 
 
 if __name__ == "__main__":

@@ -3,8 +3,9 @@ services:
     user: "${USER_ID:-1000}"
     hostname: "${HOST_NAME:-danbm}"
     image: cybulde-data-processing
-    platform: linux/amd64
     container_name: cybulde-data-processing-container
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=./creds/cybulde-428517-5c9798ea84c5.json
     build:
       context: .
       dockerfile: ./docker/Dockerfile

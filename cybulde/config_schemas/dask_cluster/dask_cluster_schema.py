@@ -1,9 +1,7 @@
-import string
-
 from dataclasses import field
+from typing import Any, Optional
 
 from hydra.core.config_store import ConfigStore
-from typing import Any, Optional
 from omegaconf import MISSING, SI
 from pydantic.dataclasses import dataclass
 
@@ -22,7 +20,7 @@ class DaskClusterConfig:
 @dataclass
 class LocalDaskClusterConfig(DaskClusterConfig):
     _target_: str = "dask.distributed.LocalCluster"
-    memory_limit: str = "auto"
+    memory_limit: str = "3GB"
     processes: bool = True
     threads_per_worker: int = 1
     scheduler_port: int = 8786
@@ -43,27 +41,25 @@ class GCPDaskClusterConfig(DaskClusterConfig):
     _target_: str = "dask_cloudprovider.gcp.GCPCluster"
     # Referencing a parameter from config file (SI from OmegaConf)
     # As they probably WON'T change, we set them on the gcp config schema.
-    project_id: str = SI("${infrastructure.project_id}")
+    projectid: str = SI("${infrastructure.project_id}")
     zone: str = SI("${infrastructure.zone}")
     network: str = SI("${infrastructure.network}")
-    
-    network_projectid: Optional[str] = "cybulde-428517"
+    network_projectid: Optional[str] = SI("${infrastructure.project_id}")
     machine_type: str = "n1-standard-1"
     source_image: str = "projects/ubuntu-os-cloud/global/images/ubuntu-minimal-2004-focal-v20220203"
     docker_image: Optional[str] = "daskdev/dask:latest"
     docker_args: str = ""
     # Extra commands to be run during the bootstrap phase.
     #   This is important for us because we need to authenticate ourselfs
-    #   to pull the Docker image when the VM starts. 
+    #   to pull the Docker image when the VM starts.
     extra_bootstrap: Optional[list[str]] = field(
-        default_factory=lambda: ["gcloud auth configure-docker --quiet europe-west4-docker.pkg.dev"]
+        default_factory=lambda: ["gcloud auth configure-docker --quiet southamerica-east1-docker.pkg.dev"]
     )
     ngpus: Optional[int] = 0
     gpu_type: Optional[str] = None
     filesystem_size: int = 50  # In GBs
-    disk_type: str = "pd-standard" # It can be pd-ssd
+    disk_type: str = "pd-standard"  # It can be pd-ssd
     on_host_maintenance: str = "TERMINATE"
-
     n_workers: int = 0
     worker_class: str = "dask.distributed.Nanny"
     worker_options: dict[str, Any] = field(default_factory=lambda: {})
@@ -73,14 +69,11 @@ class GCPDaskClusterConfig(DaskClusterConfig):
     asynchronous: Optional[bool] = None
     security: bool = True
     preemptible: Optional[bool] = False
-    debug: Optional[bool] = False
+    debug: Optional[bool] = True
     instance_labels: Optional[dict[str, str]] = None
-    
+
 
 def setup_config() -> None:
     cs = ConfigStore.instance()
-    cs.store(name="local_dask_cluster_schema", node= LocalDaskClusterConfig, group="dask_cluster")    
-    cs.store(name="gcp_dask_cluster_schema", node= GCPDaskClusterConfig, group="dask_cluster")    
-
-
-    
+    cs.store(name="local_dask_cluster_schema", node=LocalDaskClusterConfig, group="dask_cluster")
+    cs.store(name="gcp_dask_cluster_schema", node=GCPDaskClusterConfig, group="dask_cluster")

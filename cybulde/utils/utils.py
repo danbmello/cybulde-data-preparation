@@ -2,12 +2,14 @@ import logging
 import socket
 
 from subprocess import run
-# from subprocess import CalledProcessError
 
 import pkg_resources
 import symspellpy
 
 from symspellpy import SymSpell
+
+# from subprocess import CalledProcessError
+
 
 # import subprocess
 

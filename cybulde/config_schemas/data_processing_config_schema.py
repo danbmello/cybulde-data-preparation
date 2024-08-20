@@ -2,9 +2,9 @@ from hydra.core.config_store import ConfigStore
 from omegaconf import MISSING
 from pydantic.dataclasses import dataclass
 
-from cybulde.config_schemas.infrastructure import gcp_schema
-from cybulde.config_schemas.data_processing import dataset_cleaners_schema, dataset_readers_schema
 from cybulde.config_schemas.dask_cluster import dask_cluster_schema
+from cybulde.config_schemas.data_processing import dataset_cleaners_schema, dataset_readers_schema
+from cybulde.config_schemas.infrastructure import gcp_schema
 
 
 @dataclass
@@ -25,8 +25,12 @@ class DataProcessingConfig:
 
     processed_data_save_dir: str = MISSING
 
+    run_tag: str = "default_run"
+
     docker_image_name: str = MISSING
     docker_image_tag: str = MISSING
+
+    min_nrof_words: int = 2
 
 
 def setup_config() -> None:
@@ -35,8 +39,6 @@ def setup_config() -> None:
     dataset_cleaners_schema.setup_config()
 
     dask_cluster_schema.setup_config()
-    
+
     cs = ConfigStore.instance()
     cs.store(name="data_processing_config_schema", node=DataProcessingConfig)
-
-

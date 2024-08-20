@@ -23,6 +23,11 @@ dask-cloudprovider = {version = "~=2022.10", extras = ["gcp"]}
 dask-ml = "~=2023.3"
 scmrepo = ">=1.0.0,<2"
 pygit2 = "==1.13.0"
+bokeh = "~=3.1"
+
+# Tokenization
+tokenizers = "~=0.13"
+transformers = "~=4.30.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "~=7.3"

@@ -1,12 +1,12 @@
-import psutil
 from shutil import rmtree
-
-from cybulde.utils.gcp_utils import access_secret_version
-from utils.utils import run_shell_command
-
 from typing import Optional
 
 import dask.dataframe as dd
+import pandas as pd
+import psutil
+
+from cybulde.utils.gcp_utils import access_secret_version
+from cybulde.utils.utils import run_shell_command
 
 
 def get_cmd_to_get_raw_data(
@@ -70,6 +70,7 @@ def get_raw_data_with_version(
     )
     run_shell_command(command)
 
+
 def get_nrof_partitions(
     df_memory_usage: int,
     nrof_workers: int,
@@ -130,3 +131,6 @@ def get_repo_address_with_access_token(
     return f"https://{user_name}:{access_token}@{repo_address}"
 
 
+# Function to filter observations with a text with more than N (default=2) words.
+def filter_based_on_minimum_number_of_words(df: pd.DataFrame, min_nrof_words: int) -> pd.DataFrame:
+    return df[df["cleaned_text"].str.split().apply(len) >= min_nrof_words]

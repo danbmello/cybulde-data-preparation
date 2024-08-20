@@ -4,6 +4,7 @@ ARG USER_ID
 ARG USER_NAME
 ENV HOME=/home/${USER_NAME} \
     VIRTUAL_ENV=/home/${USER_NAME}/venv
+    
 ENV \
   PYTHONUNBUFFERED=1 \
   DEBIAN_FRONTEND=noninteractive \

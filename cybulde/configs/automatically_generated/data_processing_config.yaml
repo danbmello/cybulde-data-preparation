@@ -6,7 +6,7 @@ github_user_name: danbmello
 github_access_token_secret_id: cybulde-data-github-access-token
 infrastructure:
   project_id: cybulde-428517
-  zone: southamerica-west1-a
+  zone: southamerica-east1-a
   network: default
 dataset_reader_manager:
   _target_: cybulde.data_processing.dataset_readers.DatasetReaderManager
@@ -15,19 +15,35 @@ dataset_reader_manager:
       _target_: cybulde.data_processing.dataset_readers.GHCDatasetReader
       dataset_dir: ./data/raw/ghc
       dataset_name: ghc
+      gcp_project_id: cybulde-428517
+      gcp_github_access_token_secret_id: cybulde-data-github-access-token
+      dvc_remote_repo: https://github.com/danbmello/cybulde-data.git
+      github_user_name: danbmello
+      version: v3
       dev_split_ratio: 0.3
     jtc:
       _target_: cybulde.data_processing.dataset_readers.JigsawToxicCommentsDatasetReader
       dataset_dir: ./data/raw/jigsaw-toxic-comment
       dataset_name: jtc
-      dev_split_ratio: 0.06
+      gcp_project_id: cybulde-428517
+      gcp_github_access_token_secret_id: cybulde-data-github-access-token
+      dvc_remote_repo: https://github.com/danbmello/cybulde-data.git
+      github_user_name: danbmello
+      version: v3
+      dev_split_ratio: 0.03
     twitter:
       _target_: cybulde.data_processing.dataset_readers.TwitterDatasetReader
       dataset_dir: ./data/raw/twitter
       dataset_name: twitter
-      test_split_ratio: 0.2
-      dev_split_ratio: 0.25
+      gcp_project_id: cybulde-428517
+      gcp_github_access_token_secret_id: cybulde-data-github-access-token
+      dvc_remote_repo: https://github.com/danbmello/cybulde-data.git
+      github_user_name: danbmello
+      version: v3
+      test_split_ratio: 0.1
+      dev_split_ratio: 0.125
   repartition: true
+  available_memory: null
 dataset_cleaner_manager:
   _target_: cybulde.data_processing.dataset_cleaners.DatasetCleanerManager
   dataset_cleaners:
@@ -50,17 +66,10 @@ dataset_cleaner_manager:
       _target_: cybulde.data_processing.dataset_cleaners.ReferenceToAccountDatasetCleaner
     re_tweet:
       _target_: cybulde.data_processing.dataset_cleaners.ReTweetDatasetCleaner
-    spell_correction:
-      _target_: cybulde.data_processing.dataset_cleaners.SpellCorrectionDatasetCleaner
-      spell_correction_model:
-        _target_: cybulde.utils.utils.SpellCorrectionModel
-        max_dictionary_edit_distance: 2
-        prefix_length: 7
-        count_threshold: 1
 dask_cluster:
   _target_: dask.distributed.LocalCluster
-  n_workers: 4
-  memory_limit: auto
+  n_workers: 1
+  memory_limit: 3GB
   processes: true
   threads_per_worker: 1
   scheduler_port: 8786
@@ -74,6 +83,8 @@ dask_cluster:
   protocol: null
   interface: null
   worker_class: null
-processed_data_save_dir: ./data/processed
+processed_data_save_dir: gs://cybulde-dbm/data/processed/default_run
+run_tag: default_run
 docker_image_name: southamerica-east1-docker.pkg.dev/cybulde-428517/cybulde/cybulde-data-processing
-docker_image_tag: a44bb71a-8046-4772-8c5f-653cffd06943
+docker_image_tag: 9e66e546-a5ff-48ce-879b-11b5d90907c3
+min_nrof_words: 2

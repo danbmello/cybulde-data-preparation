@@ -1,0 +1,17 @@
+defaults:
+  - gcp_dask_cluster_schema
+
+machine_type: n1-standard-1
+docker_image: ${docker_image_name}:${docker_image_tag}
+
+# The '>' is a Yaml syntax that means you can continue on another line.
+# The gcplogs tag will allow us to see the logs we are printing in docker container on GCP
+docker_args: >
+  --log-driver=gcplogs
+# n_workers will be equal to the number of instances we create on GCP as workers (there will be +1 as scheduler)
+n_workers: 1
+worker_options:
+  nthreads: 1
+
+# Preemptible machines are 3 to 5 times cheaper than standard machines.
+preemptible: false

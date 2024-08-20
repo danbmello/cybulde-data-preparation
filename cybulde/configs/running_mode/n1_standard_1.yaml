@@ -1,0 +1,8 @@
+# @package _global_
+
+defaults:
+  - override /dask_cluster: gcp_dask_cluster
+
+# 3.75 GB is the available memory of a n1-standard-1 machine
+dataset_reader_manager:
+  available_memory: 3.75e9
